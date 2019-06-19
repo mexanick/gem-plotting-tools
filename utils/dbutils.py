@@ -17,7 +17,7 @@ def getGEMDBView(view, vfatList=None, debug=False):
 
     Returns a pandas dataframe object storing the data read from the DB
 
-    view        - Name of View to retrieve from GEM DB 
+    view        - Name of View to retrieve from GEM DB
     vfatList    - list of VFAT Chip ID's, if None the full view is retrieved
     debug       - Prints additional info if true
     """
@@ -32,7 +32,7 @@ def getGEMDBView(view, vfatList=None, debug=False):
 
     # Make base query
     query='select * from CMS_GEM_MUON_VIEW.{0} data WHERE RUN_NUMBER = ( select max(RUN_NUMBER) as RUN_NUMBER from CMS_GEM_MUON_VIEW.{0})'.format(view)
-    
+
     # Add a filter on VFAT serial number?
     if vfatList is not None:
         query += getVFATFilter(vfatList)
@@ -59,10 +59,10 @@ def getGEMDBView(view, vfatList=None, debug=False):
             vfatsNotFound = [ "0x{:x}".format(chipId) for chipId in vfatList if "0x{:x}".format(chipId) not in list(dfGEMView['vfat3_ser_num'])]
             printYellow("VFATs not found: {0}".format(vfatsNotFound))
             pass
-        
+
         # Then add a 'vfatN' column to the output df; this increases row # to len(vfatList)
         dfGEMView = joinOnVFATSerNum(vfatList,dfGEMView)
-        
+
         pass
 
     return dfGEMView
@@ -137,7 +137,7 @@ def joinOnVFATSerNum(vfatList, dfGEMView):
 
     if 'vfat3_ser_num' in dfGEMView.columns:
         dfVFATPos = pd.DataFrame(
-                    {   'vfatN':[vfat for vfat in range(24)], 
+                    {   'vfatN':[vfat for vfat in range(len(vfatList))],
                         'vfat3_ser_num':["0x{:x}".format(id) for id in vfatList]}
                 )
 
